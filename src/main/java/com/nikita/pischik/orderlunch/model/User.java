@@ -1,6 +1,11 @@
 package com.nikita.pischik.orderlunch.model;
 
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,13 +31,14 @@ public class User {
     @Column(name = "state", nullable = false)
     private String state = State.ACTIVE.getState();
 
-    @Column(name = "deposit_id", nullable = false)
-    private String deposit_id;
+    @OneToOne(cascade = javax.persistence.CascadeType.ALL)
+    @JoinColumn(name = "deposit_id")
+    private Deposit deposit;
 
     @Column(name = "company", nullable = false)
     private String company;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.MERGE)
     @JoinTable(name = "user_user_role",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_role_id") })
@@ -86,13 +92,6 @@ public class User {
         this.state = state;
     }
 
-    public String getDeposit_id() {
-        return deposit_id;
-    }
-
-    public void setDeposit_id(String deposit_id) {
-        this.deposit_id = deposit_id;
-    }
 
     public String getCompany() {
         return company;
@@ -143,6 +142,14 @@ public class User {
         return "User [id=" + id + ", login=" + login + ", password=" + password
                 + ", userName =" + name
                 + ", email=" + e_mail + ", state=" + state + ", userProfiles=" + userProfiles +
-                ", deposit_id=" + deposit_id + ", company=" + company + "]";
+                ", deposit_id=" + deposit + ", company=" + company + "]";
+    }
+
+    public Deposit getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(Deposit deposit) {
+        this.deposit = deposit;
     }
 }
