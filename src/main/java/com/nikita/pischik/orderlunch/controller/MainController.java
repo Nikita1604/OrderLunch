@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -106,10 +108,7 @@ public class MainController {
        // }
     }
 
-    /**
-     * This method will be called on form submission, handling POST request for
-     * saving user in database. It also validates the user input
-     */
+
     @RequestMapping(value = { "/newuser" }, method = RequestMethod.POST)
     public String saveUser(@Valid User user, BindingResult result,
                            ModelMap model) {
@@ -118,16 +117,7 @@ public class MainController {
             return "registration";
         }
 
-        /*
-         * Preferred way to achieve uniqueness of field [sso] should be implementing custom @Unique annotation
-         * and applying it on field [sso] of Model class [User].
-         *
-         * Below mentioned peace of code [if block] is to demonstrate that you can fill custom errors outside the
 
-validation
-         * framework as well while still using internationalized messages.
-         *
-         */
         if(!userService.isUserLoginUnique(user.getId(), user.getLogin())){
             FieldError ssoError =new FieldError("user","login",messageSource.getMessage("non.unique.login", new
                     String[]{user.getLogin()}, Locale.getDefault()));
@@ -147,9 +137,54 @@ validation
         user.setDeposit(deposit);
         userService.saveUser(user);
 
-        model.addAttribute("success", "User " + user.getName() + " registered" +
+        model.addAttribute("success", "User " + user.getName() + " registered " +
                 "successfully");
                 //return "success";
         return "registrationsuccess";
+    }
+
+    @RequestMapping(value = { "/edit-user-{login}" }, method = RequestMethod.GET)
+    public String editUser(@PathVariable String login, ModelMap model) {
+        User user = userService.findByLogin(login);
+        model.addAttribute("user", user);
+        model.addAttribute("edit", true);
+        return "registration";
+    }
+
+
+    @RequestMapping(value = { "/edit-user-{login}" }, method = RequestMethod.POST)
+    public String updateUser(@Valid User user, BindingResult result,
+                             ModelMap model, @PathVariable String login) {
+
+        if (result.hasErrors()) {
+            return "registration";
+        }
+
+        if(!userService.isUserLoginUnique(user.getId(), user.getLogin())){
+            FieldError ssoError =new FieldError("user","login",
+                    messageSource.getMessage("non.unique.login",
+                            new String[]{user.getLogin()}, Locale.getDefault()));
+            result.addError(ssoError);
+            return "registration";
+        }
+
+        userService.updateUser(user);
+
+        model.addAttribute("success", "User " + user.getName() + " updated successfully");
+        return "registrationsuccess";
+    }
+
+    @RequestMapping(value = { "/delete-user-{login}" }, method = RequestMethod.GET)
+    public String deleteUser(@PathVariable String login) {
+        userService.deleteUserByLogin(login);
+        return "redirect:/home";
+    }
+
+    @RequestMapping(value = { "/userslist" }, method = RequestMethod.GET)
+    public String listUsers(ModelMap model) {
+
+        List<User> users = userService.findAllUsers();
+        model.addAttribute("users", users);
+        return "userslist";
     }
 }
