@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service("depositService")
 @Transactional
 public class DepositServiceImpl implements DepositService{
@@ -29,5 +31,9 @@ public class DepositServiceImpl implements DepositService{
             entity.setTomorrow_cost(deposit.getTomorrow_cost());
             entity.setUser(deposit.getUser());
         }
+    }
+
+    public List<Deposit> findAllDeposits() {
+        return dao.findAllDeposits();
     }
 }

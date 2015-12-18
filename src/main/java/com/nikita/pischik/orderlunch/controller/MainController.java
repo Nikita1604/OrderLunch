@@ -4,6 +4,7 @@ import com.nikita.pischik.orderlunch.model.Deposit;
 import com.nikita.pischik.orderlunch.model.User;
 import com.nikita.pischik.orderlunch.model.UserRole;
 import com.nikita.pischik.orderlunch.model.UserRoleType;
+import com.nikita.pischik.orderlunch.service.DepositService;
 import com.nikita.pischik.orderlunch.service.UserRoleService;
 import com.nikita.pischik.orderlunch.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class MainController {
@@ -36,6 +34,8 @@ public class MainController {
     UserService userService;
     @Autowired
     UserRoleService userRoleService;
+    @Autowired
+    DepositService depositService;
     @Autowired
     MessageSource messageSource;
 
@@ -106,6 +106,18 @@ public class MainController {
         //} else {
         //    return "redirect:Access_Denied";
        // }
+    }
+
+    @RequestMapping(value = { "/deposits" }, method = RequestMethod.GET)
+    public String depositsPage(ModelMap model) {
+        List<Deposit> deposits = depositService.findAllDeposits();
+        model.addAttribute("deposits", deposits);
+        List<User> usersForDeposit = new ArrayList<User>();
+        for (Deposit deposit : deposits) {
+            usersForDeposit.add(deposit.getUser());
+        }
+        model.addAttribute("users", usersForDeposit);
+        return "deposits";
     }
 
 

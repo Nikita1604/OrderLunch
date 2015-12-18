@@ -7,12 +7,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>User Registration Form</title>
-    <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"></link>
-    <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
+    <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"/>
+    <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"/>
 </head>
 
 <body>
-
 <div class="generic-container">
     <div class="well lead">User Registration Form</div>
     <form:form method="POST" modelAttribute="user" class="form-horizontal">
@@ -48,14 +47,11 @@
                 <div class="col-md-7">
                     <c:choose>
                         <c:when test="${edit}">
-                            <form:input type="text" path="login" id="login" class="form-control
-
-input-sm" disabled="true"/>
+                            <form:input type="text" path="login" id="login"
+                                        class="form-control input-sm" disabled="true"/>
                         </c:when>
                         <c:otherwise>
-                            <form:input type="text" path="login" id="login" class="form-control
-
-input-sm" />
+                            <form:input type="text" path="login" id="login" class="form-control input-sm" />
                             <div class="has-error">
                                 <form:errors path="login" class="help-inline"/>
                             </div>
@@ -69,9 +65,7 @@ input-sm" />
             <div class="form-group col-md-12">
                 <label class="col-md-3 control-lable" for="password">Password</label>
                 <div class="col-md-7">
-                    <form:input type="password" path="password" id="password" class="form-control input-sm"
-
-                    />
+                    <form:input type="password" path="password" id="password" class="form-control input-sm"/>
                     <div class="has-error">
                         <form:errors path="password" class="help-inline"/>
                     </div>
