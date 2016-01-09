@@ -25,12 +25,12 @@
                 </thead>
 
                 <tbody>
-                    <c:forEach items="${deposits}" var="deposit">
+                    <c:forEach items="${deposits}" var="depos">
                         <tr>
-                            <td>1</td>
-                            <td>${deposit.invoice}</td>
-                            <td>${deposit.tomorrow_cost}</td>
-                            <td>${deposit.residue}</td>
+                            <td>${depos.user.name}</td>
+                            <td>${depos.deposit.invoice}</td>
+                            <td>${depos.deposit.tomorrow_cost}</td>
+                            <td>${depos.deposit.residue}</td>
                             <td></td>
                         </tr>
                     </c:forEach>

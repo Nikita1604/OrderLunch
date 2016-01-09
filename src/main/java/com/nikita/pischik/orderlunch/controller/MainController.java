@@ -1,14 +1,18 @@
 package com.nikita.pischik.orderlunch.controller;
 
-import com.nikita.pischik.orderlunch.model.Deposit;
-import com.nikita.pischik.orderlunch.model.User;
-import com.nikita.pischik.orderlunch.model.UserRole;
-import com.nikita.pischik.orderlunch.model.UserRoleType;
+import com.nikita.pischik.orderlunch.configuration.MailConfiguration;
+import com.nikita.pischik.orderlunch.model.*;
+import com.nikita.pischik.orderlunch.notification.NotificationManager;
+import com.nikita.pischik.orderlunch.notification.SimpleNotificationManager;
 import com.nikita.pischik.orderlunch.service.DepositService;
 import com.nikita.pischik.orderlunch.service.UserRoleService;
 import com.nikita.pischik.orderlunch.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -111,12 +115,15 @@ public class MainController {
     @RequestMapping(value = { "/deposits" }, method = RequestMethod.GET)
     public String depositsPage(ModelMap model) {
         List<Deposit> deposits = depositService.findAllDeposits();
-        model.addAttribute("deposits", deposits);
         List<User> usersForDeposit = new ArrayList<User>();
         for (Deposit deposit : deposits) {
             usersForDeposit.add(deposit.getUser());
         }
-        model.addAttribute("users", usersForDeposit);
+        List<DepositViewModel> depositViewModels = new ArrayList<DepositViewModel>();
+        for (int i=0; i<deposits.size(); i++) {
+            depositViewModels.add(new DepositViewModel(usersForDeposit.get(i), deposits.get(i)));
+        }
+        model.addAttribute("deposits", depositViewModels);
         return "deposits";
     }
 
@@ -151,6 +158,9 @@ public class MainController {
 
         model.addAttribute("success", "User " + user.getName() + " registered " +
                 "successfully");
+        SimpleNotificationManager simpleNotificationManager = new SimpleNotificationManager();
+
+        simpleNotificationManager.placeOrder(user);
                 //return "success";
         return "registrationsuccess";
     }
