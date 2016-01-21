@@ -9,8 +9,7 @@ public class Deposit {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @OneToOne(mappedBy = "deposit")
     private User user;
 
     @Column(name = "invoice", nullable = false)

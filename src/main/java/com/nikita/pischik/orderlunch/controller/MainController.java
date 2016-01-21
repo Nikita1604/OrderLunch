@@ -2,13 +2,19 @@ package com.nikita.pischik.orderlunch.controller;
 
 import com.nikita.pischik.orderlunch.configuration.MailConfiguration;
 import com.nikita.pischik.orderlunch.model.*;
+import com.nikita.pischik.orderlunch.model.MenuItem;
 import com.nikita.pischik.orderlunch.notification.NotificationManager;
 import com.nikita.pischik.orderlunch.notification.SimpleNotificationManager;
 import com.nikita.pischik.orderlunch.service.DepositService;
+import com.nikita.pischik.orderlunch.service.MenuService;
 import com.nikita.pischik.orderlunch.service.UserRoleService;
 import com.nikita.pischik.orderlunch.service.UserService;
+import com.nikita.pischik.orderlunch.utils.MenuDownloader;
+import com.nikita.pischik.orderlunch.utils.MenuViewModel;
+import com.nikita.pischik.orderlunch.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -22,14 +28,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 @Controller
 public class MainController {
@@ -41,13 +47,81 @@ public class MainController {
     @Autowired
     DepositService depositService;
     @Autowired
+    MenuService menuService;
+    @Autowired
     MessageSource messageSource;
 
 
     @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
-    public String homePage(ModelMap model) {
-        model.addAttribute("greeting", "Hi, Welcome to Lunch Order site");
-        return "welcome";
+    public String homePage(ModelMap model) throws Exception {
+        MenuDownloader menuDownloader = new MenuDownloader();
+        MenuDownloader.MenuObject menu =
+                menuDownloader.fromJSONParser("http://www.cafebaluk.by/Orders/GetTodayDishes?day=1");
+        List<MenuDownloader.ItemMenu> menuList = menu.getDishes();
+        List<Integer> dishesInCategory = new ArrayList<Integer>();
+        for (int i=0; i<20; i++) {
+            dishesInCategory.add(0);
+        }
+
+        List<MenuItem> newMenu = new ArrayList<MenuItem>();
+        for (int i=0; i<menuList.size(); i++) {
+            MenuItem menuItem = new MenuItem();
+            int q = dishesInCategory.get(menuList.get(i).getCategoryId()) + 1;
+            dishesInCategory.set(menuList.get(i).getCategoryId(), q);
+            menuItem.setIn_category_id(dishesInCategory.get(menuList.get(i).getCategoryId()));
+            menuItem.setCategory(menuList.get(i).getCategory().getName());
+            menuItem.setCost(Integer.toString(menuList.get(i).getPrice()));
+            menuItem.setDescription(menuList.get(i).getDescription());
+            menuItem.setTitle(menuList.get(i).getName());
+            menuItem.setWeight(menuList.get(i).getWeight());
+            menuItem.setCategory_id(Integer.toString(menuList.get(i).getCategoryId()));
+            menuItem.setImage("http://www.cafebaluk.by" + menuList.get(i).getDishImage());
+            /*String description = menuItem.getDescription();
+            if (description != null) {
+                if (description.length() > 70) {
+                    String first_part = description.substring(0, 70);
+                    description = description.substring(70);
+                    int zap = description.indexOf(',');
+                    first_part = first_part + description.substring(0, zap + 1);
+                    first_part += '\n';
+                    first_part += description.substring(zap + 1);
+                    menuItem.setDescription(first_part);
+                }
+            }*/
+            newMenu.add(menuItem);
+        }
+
+        List<MenuItem> menuItemList = menuService.findAllMenu();
+        if (Utils.updateMenu(menuItemList, newMenu)) {
+            menuService.deleteAllMenu();
+            for (int i=0; i<newMenu.size(); i++) {
+                menuService.saveMenu(newMenu.get(i));
+            }
+        }
+        List<MenuItem> menuFromDB = menuService.findAllMenu();
+
+        List<MenuViewModel> menuToView = Utils.formingMenuListView(menuFromDB);
+        model.addAttribute("menu", menuToView);
+        return "main";
+    }
+
+    /*@RequestMapping(value ={ "/update-deposit-{id}" }, method = RequestMethod.GET)
+    public void depositUpdate(@RequestParam Integer value,
+                                @PathVariable Integer id) {
+        Deposit deposit1 = depositService.findById(id);
+        deposit1.setInvoice(deposit1.getInvoice() + value);
+        //depositService.saveDeposit(deposit);
+        depositService.updateDeposit(deposit1);
+
+    }*/
+
+    @RequestMapping(value ={ "/update-deposit-{id}" }, method = RequestMethod.POST)
+    public @ResponseBody String depositUpdate(@RequestParam("value") Integer value,
+                              @PathVariable Integer id) {
+        Deposit deposit1 = depositService.findById(id);
+        deposit1.setInvoice(deposit1.getInvoice() + value);
+        depositService.updateDeposit(deposit1);
+        return "abacaba";
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
@@ -109,7 +183,7 @@ public class MainController {
             return "registration";
         //} else {
         //    return "redirect:Access_Denied";
-       // }
+        //}
     }
 
     @RequestMapping(value = { "/deposits" }, method = RequestMethod.GET)
