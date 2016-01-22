@@ -10,4 +10,5 @@ public interface MenuDao {
     void save(MenuItem menuItem);
     List<MenuItem> findAllMenu();
     void deleteAllMenu();
+    MenuItem findByMenuId(int id);
 }

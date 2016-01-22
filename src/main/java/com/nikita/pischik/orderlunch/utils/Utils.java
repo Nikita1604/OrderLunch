@@ -7,6 +7,27 @@ import java.util.List;
 
 public class Utils {
 
+    public static class orderFromBasket {
+        private List<Integer> dishes;
+        private List<Integer> counts;
+
+        public List<Integer> getDishes() {
+            return dishes;
+        }
+
+        public void setDishes(List<Integer> dishes) {
+            this.dishes = dishes;
+        }
+
+        public List<Integer> getCounts() {
+            return counts;
+        }
+
+        public void setCounts(List<Integer> counts) {
+            this.counts = counts;
+        }
+    }
+
     public static boolean updateMenu(List<MenuItem> oldMenu, List<MenuItem> newMenu) {
         if (oldMenu.size() != newMenu.size()) {
             return true;
@@ -22,7 +43,8 @@ public class Utils {
                             oldMenuItem.getCost().equals(newMenuItem.getCost()) &&
                             oldMenuItem.getImage().equals(newMenuItem.getImage()) &&
                             oldMenuItem.getTitle().equals(newMenuItem.getTitle()) &&
-                            oldMenuItem.getWeight().equals(newMenuItem.getWeight())) {
+                            oldMenuItem.getWeight().equals(newMenuItem.getWeight()) &&
+                            oldMenuItem.getDish_id() == newMenuItem.getDish_id()) {
                         hasSame = true;
                         break;
                     }

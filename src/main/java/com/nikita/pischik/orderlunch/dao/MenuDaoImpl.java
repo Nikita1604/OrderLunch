@@ -37,6 +37,14 @@ public class MenuDaoImpl extends AbstractDao<Integer, MenuItem> implements MenuD
             MenuItem menuItem = (MenuItem) crit.uniqueResult();
             delete(menuItem);
         }
-
     }
+
+    public MenuItem findByMenuId(int id) {
+        Criteria criteria = createEntityCriteria();
+        criteria.add(Restrictions.eq("dish_id", id));
+        MenuItem menuItem =(MenuItem) criteria.uniqueResult();
+        return menuItem;
+    }
+
+
 }

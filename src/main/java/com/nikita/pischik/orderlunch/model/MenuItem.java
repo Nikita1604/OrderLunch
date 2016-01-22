@@ -34,6 +34,9 @@ public class MenuItem {
     @Column(name = "in_category_id")
     private int in_category_id;
 
+    @Column(name = "dish_id")
+    private int dish_id;
+
     public long getId() {
         return id;
     }
@@ -104,5 +107,13 @@ public class MenuItem {
 
     public void setCategory_id(String category_id) {
         this.category_id = category_id;
+    }
+
+    public int getDish_id() {
+        return dish_id;
+    }
+
+    public void setDish_id(int dish_id) {
+        this.dish_id = dish_id;
     }
 }

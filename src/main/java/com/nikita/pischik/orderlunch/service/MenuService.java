@@ -9,4 +9,5 @@ public interface MenuService {
     void saveMenu(MenuItem menuItem);
     List<MenuItem> findAllMenu();
     void deleteAllMenu();
+    MenuItem findByDishId(int id);
 }

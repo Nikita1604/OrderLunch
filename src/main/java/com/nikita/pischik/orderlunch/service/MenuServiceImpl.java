@@ -31,4 +31,8 @@ public class MenuServiceImpl implements MenuService{
     public void deleteAllMenu() {
         dao.deleteAllMenu();
     }
+
+    public MenuItem findByDishId(int id) {
+        return dao.findByMenuId(id);
+    }
 }

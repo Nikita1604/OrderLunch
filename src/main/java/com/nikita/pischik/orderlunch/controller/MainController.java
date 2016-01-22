@@ -1,5 +1,6 @@
 package com.nikita.pischik.orderlunch.controller;
 
+import com.google.gson.Gson;
 import com.nikita.pischik.orderlunch.configuration.MailConfiguration;
 import com.nikita.pischik.orderlunch.model.*;
 import com.nikita.pischik.orderlunch.model.MenuItem;
@@ -19,6 +20,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,18 +78,7 @@ public class MainController {
             menuItem.setWeight(menuList.get(i).getWeight());
             menuItem.setCategory_id(Integer.toString(menuList.get(i).getCategoryId()));
             menuItem.setImage("http://www.cafebaluk.by" + menuList.get(i).getDishImage());
-            /*String description = menuItem.getDescription();
-            if (description != null) {
-                if (description.length() > 70) {
-                    String first_part = description.substring(0, 70);
-                    description = description.substring(70);
-                    int zap = description.indexOf(',');
-                    first_part = first_part + description.substring(0, zap + 1);
-                    first_part += '\n';
-                    first_part += description.substring(zap + 1);
-                    menuItem.setDescription(first_part);
-                }
-            }*/
+            menuItem.setDish_id(menuList.get(i).getDishId());
             newMenu.add(menuItem);
         }
 
@@ -121,6 +112,13 @@ public class MainController {
         Deposit deposit1 = depositService.findById(id);
         deposit1.setInvoice(deposit1.getInvoice() + value);
         depositService.updateDeposit(deposit1);
+        return "abacaba";
+    }
+
+    @RequestMapping(value = {"/save-order"}, method = RequestMethod.POST)
+    public @ResponseBody String saveOrder(@RequestBody String data) {
+        Gson gson = new Gson();
+        Utils.orderFromBasket dishes = gson.fromJson(data, Utils.orderFromBasket.class);
         return "abacaba";
     }
 

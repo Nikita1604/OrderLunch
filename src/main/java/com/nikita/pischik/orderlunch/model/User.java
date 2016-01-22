@@ -1,8 +1,5 @@
 package com.nikita.pischik.orderlunch.model;
 
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
-
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -34,6 +31,9 @@ public class User {
     @OneToOne(cascade = javax.persistence.CascadeType.ALL)
     @JoinColumn(name = "deposit_id")
     private Deposit deposit;
+
+    @OneToMany(mappedBy = "user")
+    private Set<OrderModel> orderModels;
 
     @Column(name = "company", nullable = false)
     private String company;
@@ -151,5 +151,13 @@ public class User {
 
     public void setDeposit(Deposit deposit) {
         this.deposit = deposit;
+    }
+
+    public Set<OrderModel> getOrderModels() {
+        return orderModels;
+    }
+
+    public void setOrderModels(Set<OrderModel> orderModels) {
+        this.orderModels = orderModels;
     }
 }

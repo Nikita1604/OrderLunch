@@ -29,6 +29,23 @@ body, .form-control{
     box-shadow: 0 0 30px black;
 }
 
+.busket-container {
+    width: 300px;
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #EAE7E7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 0 30px black;
+}
+
 .custom-width {
     width: 80px !important;
+}
+
+.image-button {
+    width: 25px;
+    height: 25px;
 }
