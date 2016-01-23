@@ -49,3 +49,38 @@ body, .form-control{
     width: 25px;
     height: 25px;
 }
+
+.menu-container {
+    border: 1px solid #e7e7e7;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+    overflow: hidden;
+    margin-top:50px;
+}
+.menu-li {
+    float: left;
+}
+.menu-li a {
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration:none;
+    color: #666;
+    font-weight: bold;
+}
+.active {
+    float: left;
+    background-color: #4CAF50;
+}
+.active a {
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration:none;
+    font-weight: bold;
+    color: white;
+}

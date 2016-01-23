@@ -28,6 +28,8 @@ public class Utils {
         }
     }
 
+
+
     public static boolean updateMenu(List<MenuItem> oldMenu, List<MenuItem> newMenu) {
         if (oldMenu.size() != newMenu.size()) {
             return true;

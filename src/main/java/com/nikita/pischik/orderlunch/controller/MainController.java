@@ -7,6 +7,7 @@ import com.nikita.pischik.orderlunch.model.MenuItem;
 import com.nikita.pischik.orderlunch.notification.NotificationManager;
 import com.nikita.pischik.orderlunch.notification.SimpleNotificationManager;
 import com.nikita.pischik.orderlunch.service.*;
+import com.nikita.pischik.orderlunch.utils.ManagerModel;
 import com.nikita.pischik.orderlunch.utils.MenuDownloader;
 import com.nikita.pischik.orderlunch.utils.MenuViewModel;
 import com.nikita.pischik.orderlunch.utils.Utils;
@@ -101,15 +102,6 @@ public class MainController {
         return "main";
     }
 
-    /*@RequestMapping(value ={ "/update-deposit-{id}" }, method = RequestMethod.GET)
-    public void depositUpdate(@RequestParam Integer value,
-                                @PathVariable Integer id) {
-        Deposit deposit1 = depositService.findById(id);
-        deposit1.setInvoice(deposit1.getInvoice() + value);
-        //depositService.saveDeposit(deposit);
-        depositService.updateDeposit(deposit1);
-
-    }*/
 
     @RequestMapping(value ={ "/update-deposit-{id}" }, method = RequestMethod.POST)
     public @ResponseBody String depositUpdate(@RequestParam("value") Integer value,
@@ -159,7 +151,7 @@ public class MainController {
         return "redirect:/userorderlist";
     }
 
-    @RequestMapping(value = "/userorderlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/orderhistory", method = RequestMethod.GET)
     public String userOrderList(ModelMap model) {
         String login = getPrincipal();
         List<OrderModel> list = orderService.findAllOrders();
@@ -177,6 +169,30 @@ public class MainController {
     public String adminPage(ModelMap model) {
         model.addAttribute("user", getPrincipal());
         return "admin";
+    }
+
+    @RequestMapping(value = "/orders", method = RequestMethod.GET)
+    public String orders(ModelMap model) {
+        List<OrderModel> list = orderService.findAllOrders();
+        Set<OrderModel> orderModelList = new HashSet<OrderModel>();
+        for (int i=0; i<list.size(); i++) {
+            if (!list.get(i).is_send()) {
+                orderModelList.add(list.get(i));
+            }
+        }
+        model.addAttribute("orders", orderModelList);
+        ManagerModel manager = new ManagerModel();
+        model.addAttribute("manager", manager);
+        return "orders";
+    }
+
+    @RequestMapping(value = "/orders", method = RequestMethod.POST)
+    public String acceptedOrders(@Valid @ModelAttribute("manager")ManagerModel manager,
+                                 BindingResult result, ModelMap model) {
+        if (result.hasErrors()) {
+            return "redirect:/orders";
+        }
+        return "welcome";
     }
 
     @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
