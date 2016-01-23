@@ -26,4 +26,8 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderModel> findNotSentOrders() {
         return dao.findNotSentOrders();
     }
+
+    public void save(OrderModel orderModel) {
+        dao.save(orderModel);
+    }
 }

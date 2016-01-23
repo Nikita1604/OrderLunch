@@ -6,10 +6,7 @@ import com.nikita.pischik.orderlunch.model.*;
 import com.nikita.pischik.orderlunch.model.MenuItem;
 import com.nikita.pischik.orderlunch.notification.NotificationManager;
 import com.nikita.pischik.orderlunch.notification.SimpleNotificationManager;
-import com.nikita.pischik.orderlunch.service.DepositService;
-import com.nikita.pischik.orderlunch.service.MenuService;
-import com.nikita.pischik.orderlunch.service.UserRoleService;
-import com.nikita.pischik.orderlunch.service.UserService;
+import com.nikita.pischik.orderlunch.service.*;
 import com.nikita.pischik.orderlunch.utils.MenuDownloader;
 import com.nikita.pischik.orderlunch.utils.MenuViewModel;
 import com.nikita.pischik.orderlunch.utils.Utils;
@@ -36,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -52,6 +51,12 @@ public class MainController {
     MenuService menuService;
     @Autowired
     MessageSource messageSource;
+    @Autowired
+    OrderService orderService;
+    @Autowired
+    OrderItemService orderItemService;
+    @Autowired
+    OrderListService orderListService;
 
 
     @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
@@ -119,7 +124,53 @@ public class MainController {
     public @ResponseBody String saveOrder(@RequestBody String data) {
         Gson gson = new Gson();
         Utils.orderFromBasket dishes = gson.fromJson(data, Utils.orderFromBasket.class);
-        return "abacaba";
+        String login = getPrincipal();
+        List<Integer> dishesList = dishes.getDishes();
+        List<Integer> countsList = dishes.getCounts();
+        OrderModel orderModel = new OrderModel();
+        OrderList orderList = new OrderList();
+        orderModel.setIs_send(false);
+        orderModel.setUser(userService.findByLogin(login));
+        List<OrderItem> orderItems = new ArrayList<OrderItem>();
+        Set<OrderItem> orderItemSet = new HashSet<OrderItem>();
+        int summ_cost = 0;
+        for (int i=0; i<dishesList.size(); i++) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setCount(countsList.get(i));
+            orderItem.setDish_id(dishesList.get(i));
+            MenuItem menuItem = menuService.findByDishId(dishesList.get(i));
+            orderItem.setDishName(menuItem.getTitle());
+            orderItem.setCost(Integer.parseInt(menuItem.getCost()));
+            orderItem.setOrderList(orderList);
+            orderItems.add(orderItem);
+            orderItemSet.add(orderItem);
+            summ_cost = summ_cost + Integer.parseInt(menuItem.getCost()) * countsList.get(i);
+        }
+        orderList.setCost(summ_cost);
+        orderList.setOrderItems(orderItemSet);
+        orderModel.setOrderList(orderList);
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Date date = new Date();
+        orderModel.setDate(dateFormat.format(date));
+        orderService.save(orderModel);
+        for (int i=0; i<orderItems.size(); i++) {
+            orderItemService.save(orderItems.get(i));
+        }
+        return "redirect:/userorderlist";
+    }
+
+    @RequestMapping(value = "/userorderlist", method = RequestMethod.GET)
+    public String userOrderList(ModelMap model) {
+        String login = getPrincipal();
+        List<OrderModel> list = orderService.findAllOrders();
+        Set<OrderModel> orderModelList = new HashSet<OrderModel>();
+        for (int i=0; i<list.size(); i++) {
+            if (list.get(i).getUser().getLogin().equals(login)) {
+                orderModelList.add(list.get(i));
+            }
+        }
+        model.addAttribute("orders", orderModelList);
+        return "userorderlist";
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
@@ -154,7 +205,6 @@ public class MainController {
 
         if (principal instanceof UserDetails) {
             userName = ((UserDetails)principal).getUsername();
-
         } else {
             userName = principal.toString();
         }
@@ -174,14 +224,14 @@ public class MainController {
 
     @RequestMapping(value = { "/newuser" }, method = RequestMethod.GET)
     public String newUser(ModelMap model) {
-        //if (isUserAdmin()) {
+        if (isUserAdmin()) {
             User user = new User();
             model.addAttribute("user", user);
             model.addAttribute("edit", false);
             return "registration";
-        //} else {
-        //    return "redirect:Access_Denied";
-        //}
+        } else {
+            return "redirect:Access_Denied";
+        }
     }
 
     @RequestMapping(value = { "/deposits" }, method = RequestMethod.GET)

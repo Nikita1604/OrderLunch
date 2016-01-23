@@ -17,4 +17,8 @@ public class OrderListServiceImpl implements OrderListService{
     public OrderList findById(int id) {
         return dao.findById(id);
     }
+
+    public void save(OrderList orderList) {
+        dao.save(orderList);
+    }
 }

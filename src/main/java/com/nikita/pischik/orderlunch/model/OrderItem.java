@@ -12,7 +12,16 @@ public class OrderItem {
     @Column(name = "dish_id")
     private int dish_id;
 
-    @ManyToOne
+    @Column(name = "count")
+    private int count;
+
+    @Column(name = "dish_name")
+    private String dishName;
+
+    @Column(name = "dish_cost")
+    private int cost;
+
+    @ManyToOne()
     @JoinColumn(name = "order_list_id")
     private OrderList orderList;
 
@@ -38,5 +47,29 @@ public class OrderItem {
 
     public void setOrderList(OrderList orderList) {
         this.orderList = orderList;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public String getDishName() {
+        return dishName;
+    }
+
+    public void setDishName(String dishName) {
+        this.dishName = dishName;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 }

@@ -21,4 +21,8 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderItem findByDishId(int id) {
         return dao.findByDishId(id);
     }
+
+    public void save(OrderItem orderItem) {
+        dao.save(orderItem);
+    }
 }

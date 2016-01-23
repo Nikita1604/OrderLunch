@@ -17,4 +17,8 @@ public class OrderItemDaoImp extends AbstractDao<Integer, OrderItem> implements 
         OrderItem orderItem = (OrderItem) criteria.uniqueResult();
         return orderItem;
     }
+
+    public void save(OrderItem orderItem) {
+        persist(orderItem);
+    }
 }

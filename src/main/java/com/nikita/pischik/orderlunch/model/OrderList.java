@@ -1,6 +1,7 @@
 package com.nikita.pischik.orderlunch.model;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -11,11 +12,12 @@ public class OrderList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToMany(mappedBy = "orderList")
+    @OneToMany(mappedBy = "orderList", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<OrderItem> orderItems;
 
-    @OneToOne(mappedBy = "orderList")
-    private OrderModel orderModel;
+
+    @Column(name = "cost")
+    private int cost;
 
     public int getId() {
         return id;
@@ -34,11 +36,13 @@ public class OrderList {
         this.orderItems = orderItems;
     }
 
-    public OrderModel getOrderModel() {
-        return orderModel;
+
+
+    public int getCost() {
+        return cost;
     }
 
-    public void setOrderModel(OrderModel orderModel) {
-        this.orderModel = orderModel;
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 }

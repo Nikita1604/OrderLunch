@@ -10,4 +10,5 @@ public interface OrderDao {
     OrderModel findById(int id);
     List<OrderModel> findAllOrders();
     List<OrderModel> findNotSentOrders();
+    void save(OrderModel orderModel);
 }

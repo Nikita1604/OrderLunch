@@ -32,6 +32,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .usernameParameter("login").passwordParameter("password")
                 .and().exceptionHandling().accessDeniedPage("/Access_Denied")
                 .and().csrf().disable();
-
     }
 }

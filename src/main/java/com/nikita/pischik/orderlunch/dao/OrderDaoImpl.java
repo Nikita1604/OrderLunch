@@ -36,4 +36,8 @@ public class OrderDaoImpl extends AbstractDao<Integer, OrderModel> implements Or
         }
         return ans;
     }
+
+    public void save(OrderModel orderModel) {
+        persist(orderModel);
+    }
 }
