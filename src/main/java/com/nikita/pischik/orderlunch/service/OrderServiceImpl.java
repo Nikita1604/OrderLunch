@@ -30,4 +30,8 @@ public class OrderServiceImpl implements OrderService {
     public void save(OrderModel orderModel) {
         dao.save(orderModel);
     }
+
+    public void update(OrderModel orderModel) {
+        dao.update(orderModel);
+    }
 }

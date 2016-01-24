@@ -2,6 +2,7 @@ package com.nikita.pischik.orderlunch.notification;
 
 
 import com.nikita.pischik.orderlunch.model.User;
+import com.nikita.pischik.orderlunch.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -9,6 +10,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.util.List;
 import java.util.Properties;
 
 public class SimpleNotificationManager implements NotificationManager {
@@ -16,6 +18,7 @@ public class SimpleNotificationManager implements NotificationManager {
     private JavaMailSender mailSender;
 
     private SimpleMailMessage templateMessage;
+
 
     public SimpleNotificationManager() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -36,9 +39,23 @@ public class SimpleNotificationManager implements NotificationManager {
         this.mailSender = mailSender;
     }
 
-    public void setTemplateMessage(SimpleMailMessage templateMessage) {
-        this.templateMessage = templateMessage;
+
+    public void sendNotificationMessage(List<User> userList) {
+        for (int i=0; i<userList.size(); i++) {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setSubject("Не останьтесь голодным!");
+            msg.setTo(userList.get(i).getE_mail());
+            msg.setText(userList.get(i).getName() + ", напоминаем вам о необходимости сделать заказ обеда " +
+                    "на следующий рабочий день до 13.00 на сайте OrderLuch!");
+            try {
+                this.mailSender.send(msg);
+            }
+            catch (MailException e) {
+                System.err.println(e.getMessage());
+            }
+        }
     }
+
 
     public void placeOrder(User user) {
         SimpleMailMessage msg = new SimpleMailMessage();

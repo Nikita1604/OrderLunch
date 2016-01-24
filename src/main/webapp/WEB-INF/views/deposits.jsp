@@ -52,8 +52,8 @@
                             <td>${depos.deposit.tomorrow_cost}</td>
                             <td>${depos.deposit.residue}</td>
                             <td style="width: 40px">
-                                <div onclick="onPlusClick(${depos.deposit.id})" style="width: 25px">
-                                    <img src="/static/image/plusimage.png" style="width: 25px; height: 25px"/>
+                                <div id="plus-button-container" onclick="onPlusClick(${depos.deposit.id})" style="width: 25px">
+                                    <img id="plus-button-img" src="/static/image/plus.png" style="width: 25px; height: 25px"/>
                                 </div>
 
                             </td>
@@ -70,8 +70,13 @@
             var element = document.getElementById("deposit-"+id);
             var tdInput = document.createElement("td");
             var tdButton = document.createElement("td");
+            tdInput.setAttribute("id", "input-td");
+            tdButton.setAttribute("id", "button-td");
             var input = document.createElement("input");
-
+            var plusButton = document.getElementById("plus-button-img");
+            plusButton.setAttribute("src", "/static/image/delete.png");
+            var plusButtonContainer = document.getElementById("plus-button-container");
+            plusButtonContainer.setAttribute("onClick", "discardChanges("+id+")");
             input.setAttribute("id", "value-input");
             var button = document.createElement("button");
             button.innerText = "Save";
@@ -80,6 +85,15 @@
             tdButton.appendChild(button);
             element.appendChild(tdInput);
             element.appendChild(tdButton);
+        }
+        function discardChanges(id) {
+            var element = document.getElementById("deposit-"+id);
+            element.removeChild(document.getElementById("input-td"));
+            element.removeChild(document.getElementById("button-td"));
+            var plusButton = document.getElementById("plus-button-img");
+            var plusButtonContainer = document.getElementById("plus-button-container");
+            plusButton.setAttribute("src", "/static/image/plus.png");
+            plusButtonContainer.setAttribute("onClick", "onPlusClick("+id+")");
         }
         function saveValue(id) {
             var valueInput = document.getElementById("value-input");

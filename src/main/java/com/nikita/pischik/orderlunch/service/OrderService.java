@@ -10,4 +10,5 @@ public interface OrderService {
     List<OrderModel> findAllOrders();
     List<OrderModel> findNotSentOrders();
     void save(OrderModel orderModel);
+    void update(OrderModel orderModel);
 }

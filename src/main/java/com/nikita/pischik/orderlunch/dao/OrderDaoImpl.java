@@ -40,4 +40,14 @@ public class OrderDaoImpl extends AbstractDao<Integer, OrderModel> implements Or
     public void save(OrderModel orderModel) {
         persist(orderModel);
     }
+
+    public void update(OrderModel orderModel) {
+        OrderModel entity = findById(orderModel.getId());
+        if (entity != null) {
+            entity.setIs_send(orderModel.is_send());
+            entity.setDate(orderModel.getDate());
+            entity.setOrderList(orderModel.getOrderList());
+            entity.setUser(orderModel.getUser());
+        }
+    }
 }

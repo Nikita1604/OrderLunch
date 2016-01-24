@@ -1,6 +1,8 @@
 package com.nikita.pischik.orderlunch.utils;
 
 import com.nikita.pischik.orderlunch.model.MenuItem;
+import com.nikita.pischik.orderlunch.notification.SimpleNotificationManager;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.ArrayList;
 import java.util.List;

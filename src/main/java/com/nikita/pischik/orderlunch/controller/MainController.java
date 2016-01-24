@@ -122,7 +122,9 @@ public class MainController {
         OrderModel orderModel = new OrderModel();
         OrderList orderList = new OrderList();
         orderModel.setIs_send(false);
-        orderModel.setUser(userService.findByLogin(login));
+        User user = userService.findByLogin(login);
+        orderModel.setUser(user);
+        int deposit = user.getDeposit().getInvoice();
         List<OrderItem> orderItems = new ArrayList<OrderItem>();
         Set<OrderItem> orderItemSet = new HashSet<OrderItem>();
         int summ_cost = 0;
@@ -138,6 +140,12 @@ public class MainController {
             orderItemSet.add(orderItem);
             summ_cost = summ_cost + Integer.parseInt(menuItem.getCost()) * countsList.get(i);
         }
+        deposit -= summ_cost;
+        Deposit deposit1 = user.getDeposit();
+        deposit1.setInvoice(deposit);
+        deposit1.setTomorrow_cost(summ_cost);
+        deposit1.setResidue(deposit);
+        depositService.updateDeposit(deposit1);
         orderList.setCost(summ_cost);
         orderList.setOrderItems(orderItemSet);
         orderModel.setOrderList(orderList);
@@ -191,6 +199,13 @@ public class MainController {
                                  BindingResult result, ModelMap model) {
         if (result.hasErrors()) {
             return "redirect:/orders";
+        }
+        List<OrderModel> list = orderService.findAllOrders();
+        for (int i=0; i<list.size(); i++) {
+            if (!list.get(i).is_send()) {
+                list.get(i).setIs_send(true);
+                orderService.update(list.get(i));
+            }
         }
         return "welcome";
     }
