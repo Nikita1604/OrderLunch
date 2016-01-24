@@ -23,6 +23,11 @@ public class OrderDaoImpl extends AbstractDao<Integer, OrderModel> implements Or
         return orderModels;
     }
 
+    public void delete(OrderModel orderModel) {
+        OrderModel orderModel1 = findById(orderModel.getId());
+        delete(orderModel1);
+    }
+
     public List<OrderModel> findNotSentOrders() {
         Criteria criteria = createEntityCriteria();
         criteria.addOrder(org.hibernate.criterion.Order.asc("id"));

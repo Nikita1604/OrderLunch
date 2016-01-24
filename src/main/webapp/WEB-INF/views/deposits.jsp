@@ -32,15 +32,15 @@
     <div class="generic-container" style="float: left; margin-top: 120px">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <span class="lead">List of Deposits </span>
+                <span class="lead">Список депозитов</span>
             </div>
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>User name</th>
-                        <th>Invoice</th>
-                        <th>Tomorrow cost</th>
-                        <th>Residue</th>
+                        <th>Пользователь</th>
+                        <th>Счёт</th>
+                        <th>Стоимость заказа</th>
+                        <th>Остаток</th>
                     </tr>
                 </thead>
 

@@ -33,12 +33,12 @@
 <div class="generic-container" style="float: left; margin-top: 120px">
     <div class="panel panel-default">
         <!-- Default panel contents -->
-        <div class="panel-heading"><span class="lead">List of Users </span></div>
+        <div class="panel-heading"><span class="lead">Список пользователей</span></div>
         <table class="table table-hover">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
+                <th>Имя</th>
+                <th>E-mail</th>
                 <th>Login</th>
                 <th width="100"></th>
                 <th width="100"></th>
@@ -51,18 +51,16 @@
                     <td>${user.e_mail}</td>
                     <td>${user.login}</td>
                     <td><a href="<c:url value='/edit-user-${user.login}' />" class="btn btn-success
-
-custom-width">edit</a></td>
+                    custom-width">Изменить</a></td>
                     <td><a href="<c:url value='/delete-user-${user.login}' />" class="btn btn-danger
-
-custom-width">delete</a></td>
+                    custom-width">Удалить</a></td>
                 </tr>
             </c:forEach>
             </tbody>
         </table>
     </div>
     <div class="well">
-        <a href="<c:url value='/newuser' />">Add New User</a>
+        <a href="<c:url value='/newuser' />">Новый пользователь</a>
     </div>
 </div>
 </body>

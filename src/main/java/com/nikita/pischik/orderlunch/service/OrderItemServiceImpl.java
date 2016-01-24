@@ -25,4 +25,9 @@ public class OrderItemServiceImpl implements OrderItemService {
     public void save(OrderItem orderItem) {
         dao.save(orderItem);
     }
+
+    public void delete(OrderItem orderItem) {
+        dao.delete(orderItem);
+    }
+
 }

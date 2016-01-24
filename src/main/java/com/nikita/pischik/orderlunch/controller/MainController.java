@@ -7,10 +7,13 @@ import com.nikita.pischik.orderlunch.model.MenuItem;
 import com.nikita.pischik.orderlunch.notification.NotificationManager;
 import com.nikita.pischik.orderlunch.notification.SimpleNotificationManager;
 import com.nikita.pischik.orderlunch.service.*;
-import com.nikita.pischik.orderlunch.utils.ManagerModel;
-import com.nikita.pischik.orderlunch.utils.MenuDownloader;
-import com.nikita.pischik.orderlunch.utils.MenuViewModel;
-import com.nikita.pischik.orderlunch.utils.Utils;
+import com.nikita.pischik.orderlunch.utils.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.awt.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -62,6 +67,9 @@ public class MainController {
 
     @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
     public String homePage(ModelMap model) throws Exception {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
         MenuDownloader menuDownloader = new MenuDownloader();
         MenuDownloader.MenuObject menu =
                 menuDownloader.fromJSONParser("http://www.cafebaluk.by/Orders/GetTodayDishes?day=1");
@@ -106,6 +114,12 @@ public class MainController {
     @RequestMapping(value ={ "/update-deposit-{id}" }, method = RequestMethod.POST)
     public @ResponseBody String depositUpdate(@RequestParam("value") Integer value,
                               @PathVariable Integer id) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         Deposit deposit1 = depositService.findById(id);
         deposit1.setInvoice(deposit1.getInvoice() + value);
         depositService.updateDeposit(deposit1);
@@ -114,6 +128,12 @@ public class MainController {
 
     @RequestMapping(value = {"/save-order"}, method = RequestMethod.POST)
     public @ResponseBody String saveOrder(@RequestBody String data) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         Gson gson = new Gson();
         Utils.orderFromBasket dishes = gson.fromJson(data, Utils.orderFromBasket.class);
         String login = getPrincipal();
@@ -161,6 +181,9 @@ public class MainController {
 
     @RequestMapping(value = "/orderhistory", method = RequestMethod.GET)
     public String userOrderList(ModelMap model) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
         String login = getPrincipal();
         List<OrderModel> list = orderService.findAllOrders();
         Set<OrderModel> orderModelList = new HashSet<OrderModel>();
@@ -175,12 +198,19 @@ public class MainController {
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public String adminPage(ModelMap model) {
+
         model.addAttribute("user", getPrincipal());
         return "admin";
     }
 
     @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public String orders(ModelMap model) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         List<OrderModel> list = orderService.findAllOrders();
         Set<OrderModel> orderModelList = new HashSet<OrderModel>();
         for (int i=0; i<list.size(); i++) {
@@ -197,17 +227,110 @@ public class MainController {
     @RequestMapping(value = "/orders", method = RequestMethod.POST)
     public String acceptedOrders(@Valid @ModelAttribute("manager")ManagerModel manager,
                                  BindingResult result, ModelMap model) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         if (result.hasErrors()) {
             return "redirect:/orders";
         }
-        List<OrderModel> list = orderService.findAllOrders();
-        for (int i=0; i<list.size(); i++) {
-            if (!list.get(i).is_send()) {
-                list.get(i).setIs_send(true);
-                orderService.update(list.get(i));
+        CafeOrderEntity orderEntity = new CafeOrderEntity();
+        orderEntity.setOrderId(0);
+        orderEntity.setAdminName(manager.getName());
+        orderEntity.setAddress(manager.getAddress());
+        orderEntity.setCustomerName(manager.getCompany());
+        orderEntity.setPhone(manager.getPhone());
+        orderEntity.setEmail(manager.getEmail());
+        orderEntity.setNote("");
+        orderEntity.setDay(1);
+        List<CafeOrderEntity.GuyOrders> guyOrdersList = new ArrayList<CafeOrderEntity.GuyOrders>();
+        List<OrderModel> list = new ArrayList<OrderModel>();
+        List<OrderModel> listOrders = orderService.findAllOrders();
+        for (int i=0; i<listOrders.size(); i++) {
+            if (!listOrders.get(i).is_send()) {
+                //listOrders.get(i).setIs_send(true);
+                //orderService.update(listOrders.get(i));
+                list.add(listOrders.get(i));
             }
         }
-        return "welcome";
+        List<User> users = userService.findAllUsers();
+        for (int i=0; i<users.size(); i++) {
+            List<OrderModel> currentUserOrders = new ArrayList<OrderModel>();
+            for (int j=0; j<list.size(); j++) {
+                if (list.get(j).getUser().getLogin().equals(users.get(i).getLogin())) {
+                    /*if (!list.get(j).is_send()) {*/
+                        currentUserOrders.add(list.get(j));
+                    /*}*/
+                }
+            }
+            if (currentUserOrders.size() > 0) {
+                CafeOrderEntity.GuyOrders guyOrders = new CafeOrderEntity.GuyOrders();
+                guyOrders.setGuyOrderId(0);
+                guyOrders.setName(users.get(i).getName());
+                guyOrders.setOrderId(guyOrdersList.size());
+                StringBuilder dishes = new StringBuilder();
+                StringBuilder counts = new StringBuilder();
+                for (int j=0; j<currentUserOrders.size(); j++) {
+                    List<OrderItem> orderItems = new ArrayList<OrderItem>();
+                    orderItems.addAll(currentUserOrders.get(j).getOrderList().getOrderItems());
+                    for (int q=0; q<orderItems.size()-1; q++) {
+                        dishes.append(orderItems.get(q).getDish_id());
+                        dishes.append('|');
+                        counts.append(orderItems.get(q).getCount());
+                        counts.append('|');
+                    }
+                    dishes.append(orderItems.get(orderItems.size()-1).getDish_id());
+                    counts.append(orderItems.get(orderItems.size()-1).getCount());
+                    if (j<currentUserOrders.size()-1) {
+                        dishes.append('|');
+                        counts.append('|');
+                    }
+                    //notSentOrders.add(currentUserOrders.get(j));
+                }
+                guyOrders.setDishes(dishes.toString());
+                guyOrders.setCounts(counts.toString());
+                guyOrdersList.add(guyOrders);
+            }
+            currentUserOrders = null;
+        }
+        orderEntity.setGuysOrders(guyOrdersList);
+        Gson gson = new Gson();
+        String data = gson.toJson(orderEntity);
+        String postUrl = "http://www.cafebaluk.by/Orders/SubmitOrder";
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(postUrl);
+        try {
+            StringEntity postingString = new StringEntity(data);
+            post.setEntity(postingString);
+            post.setHeader("Content-type", "application/json");
+            HttpResponse response = httpClient.execute(post);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/orderaccepted";
+    }
+
+    @RequestMapping(value = "/orderaccepted", method = RequestMethod.GET)
+    public String orderAccepted(ModelMap model) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
+        model.addAttribute("success", "Заказы успешно отправлены в кафе!");
+        List<OrderModel> orderModelList = orderService.findNotSentOrders();
+        for (int i=0; i<orderModelList.size(); i++) {
+            orderModelList.get(i).setIs_send(true);
+            orderService.update(orderModelList.get(i));
+        }
+        return "ordersaccepted";
     }
 
     @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
@@ -255,6 +378,12 @@ public class MainController {
 
     @RequestMapping(value = { "/newuser" }, method = RequestMethod.GET)
     public String newUser(ModelMap model) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         if (isUserAdmin()) {
             User user = new User();
             model.addAttribute("user", user);
@@ -267,6 +396,12 @@ public class MainController {
 
     @RequestMapping(value = { "/deposits" }, method = RequestMethod.GET)
     public String depositsPage(ModelMap model) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         List<Deposit> deposits = depositService.findAllDeposits();
         List<User> usersForDeposit = new ArrayList<User>();
         for (Deposit deposit : deposits) {
@@ -284,7 +419,12 @@ public class MainController {
     @RequestMapping(value = { "/newuser" }, method = RequestMethod.POST)
     public String saveUser(@Valid User user, BindingResult result,
                            ModelMap model) {
-
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         if (result.hasErrors()) {
             return "registration";
         }
@@ -320,6 +460,12 @@ public class MainController {
 
     @RequestMapping(value = { "/edit-user-{login}" }, method = RequestMethod.GET)
     public String editUser(@PathVariable String login, ModelMap model) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         User user = userService.findByLogin(login);
         model.addAttribute("user", user);
         model.addAttribute("edit", true);
@@ -330,7 +476,12 @@ public class MainController {
     @RequestMapping(value = { "/edit-user-{login}" }, method = RequestMethod.POST)
     public String updateUser(@Valid User user, BindingResult result,
                              ModelMap model, @PathVariable String login) {
-
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         if (result.hasErrors()) {
             return "registration";
         }
@@ -351,6 +502,20 @@ public class MainController {
 
     @RequestMapping(value = { "/delete-user-{login}" }, method = RequestMethod.GET)
     public String deleteUser(@PathVariable String login) {
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
+        User user = userService.findByLogin(login);
+        List<OrderModel> orderModelList = orderService.findAllOrders();
+        for (int i=0; i<orderModelList.size(); i++) {
+            if (orderModelList.get(i).getUser().getLogin().equals(user.getLogin())) {
+                orderListService.delete(orderModelList.get(i).getOrderList());
+                orderService.delete(orderModelList.get(i));
+            }
+        }
         userService.deleteUserByLogin(login);
         return "redirect:/home";
     }
@@ -358,6 +523,12 @@ public class MainController {
     @RequestMapping(value = { "/userslist" }, method = RequestMethod.GET)
     public String listUsers(ModelMap model) {
 
+        if (getPrincipal().equals("anonymousUser")) {
+            return "redirect:/login";
+        }
+        if (!isUserAdmin()) {
+            return "redirect:/Access_Denied";
+        }
         List<User> users = userService.findAllUsers();
         model.addAttribute("users", users);
         return "userslist";

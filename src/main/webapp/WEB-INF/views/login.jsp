@@ -11,8 +11,8 @@
 </head>
 
 <body>
-<div id="mainWrapper">
-    <div class="login-container">
+<div id="authorization-container">
+    <div class="login-container" style="margin-top: 75px">
         <div class="login-card">
             <div class="login-form">
                 <c:url var="loginUrl" value="/login" />
@@ -37,7 +37,7 @@
                     </div>
                     <input type="hidden" name="${_csrf.parameterName}"  value="${_csrf.token}" />
 
-                    <div class="form-actions">
+                    <div class="form-actions" style="margin-left: 10px; margin-right: 10px">
                         <input type="submit"
                                class="btn btn-block btn-primary btn-default" value="Log in">
                     </div>

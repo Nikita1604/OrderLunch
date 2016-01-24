@@ -19,4 +19,9 @@ public class OrderListDaoImpl extends AbstractDao<Integer, OrderList> implements
     public void save(OrderList orderList) {
         persist(orderList);
     }
+
+    public void delete(OrderList orderList) {
+        OrderList orderList1 = findById(orderList.getId());
+        delete(orderList1);
+    }
 }

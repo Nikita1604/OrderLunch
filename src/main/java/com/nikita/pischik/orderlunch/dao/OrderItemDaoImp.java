@@ -21,4 +21,9 @@ public class OrderItemDaoImp extends AbstractDao<Integer, OrderItem> implements 
     public void save(OrderItem orderItem) {
         persist(orderItem);
     }
+
+    public void delete(OrderItem orderItem) {
+        OrderItem orderItem1 = findById(orderItem.getId());
+        delete(orderItem1);
+    }
 }

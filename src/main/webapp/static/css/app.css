@@ -26,7 +26,7 @@ body, .form-control{
     background-color: #EAE7E7;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-shadow: 0 0 30px black;
+    box-shadow: 0 0 10px grey;
 }
 
 .busket-container {
@@ -38,7 +38,7 @@ body, .form-control{
     background-color: #EAE7E7;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-shadow: 0 0 30px black;
+    box-shadow: 0 0 10px grey;
 }
 
 .custom-width {
@@ -83,4 +83,18 @@ body, .form-control{
     text-decoration:none;
     font-weight: bold;
     color: white;
+}
+
+#authorization-container {
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    margin-top: -150px;
+    margin-left: -150px;
+    background-color: #EAE7E7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 0 10px grey;
 }

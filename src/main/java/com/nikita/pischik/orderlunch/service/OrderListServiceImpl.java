@@ -21,4 +21,8 @@ public class OrderListServiceImpl implements OrderListService{
     public void save(OrderList orderList) {
         dao.save(orderList);
     }
+
+    public void delete(OrderList orderList) {
+        dao.delete(orderList);
+    }
 }

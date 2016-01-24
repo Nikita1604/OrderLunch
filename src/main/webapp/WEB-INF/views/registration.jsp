@@ -14,13 +14,13 @@
 
 <body>
 <div class="generic-container">
-    <div class="well lead">User Registration Form</div>
+    <div class="well lead">Форма регистрации</div>
     <form:form method="POST" modelAttribute="user" class="form-horizontal">
         <form:input type="hidden" path="id" id="id"/>
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="Name">Name</label>
+                <label class="col-md-3 control-lable" for="Name">Имя</label>
                 <div class="col-md-7">
                     <form:input type="text" path="Name" id="Name" class="form-control input-sm"/>
                     <div class="has-error">
@@ -64,7 +64,7 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="password">Password</label>
+                <label class="col-md-3 control-lable" for="password">Пароль</label>
                 <div class="col-md-7">
                     <form:input type="password" path="password" id="password" class="form-control input-sm"/>
                     <div class="has-error">
@@ -76,7 +76,7 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="email">Email</label>
+                <label class="col-md-3 control-lable" for="email">E-mail</label>
                 <div class="col-md-7">
                     <form:input type="text" path="e_mail" id="email" class="form-control input-sm" />
                     <div class="has-error">
@@ -88,7 +88,7 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="company">Company</label>
+                <label class="col-md-3 control-lable" for="company">Компания</label>
                 <div class="col-md-7">
                     <form:input type="text" path="company" id="company" class="form-control input-sm" />
                     <div class="has-error">
@@ -116,14 +116,14 @@
             <div class="form-actions floatRight">
                 <c:choose>
                     <c:when test="${edit}">
-                        <input type="submit" value="Update" class="btn btn-primary btn-sm"/> or <a
+                        <input type="submit" value="Обновить" class="btn btn-primary btn-sm"/>  <a
 
-                            href="<c:url value='/' />">Cancel</a>
+                            href="<c:url value='/registration' />">Отмена</a>
                     </c:when>
                     <c:otherwise>
-                        <input type="submit" value="Register" class="btn btn-primary btn-sm"/> or <a
+                        <input type="submit" value="Зарегестрировать" class="btn btn-primary btn-sm"/>  <a
 
-                            href="<c:url value='/' />">Cancel</a>
+                            href="<c:url value='/registration' />">Отмена</a>
                     </c:otherwise>
                 </c:choose>
             </div>

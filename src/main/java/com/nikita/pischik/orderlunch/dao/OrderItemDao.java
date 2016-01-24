@@ -6,4 +6,5 @@ public interface OrderItemDao {
     OrderItem findById(int id);
     OrderItem findByDishId(int id);
     void save(OrderItem orderItem);
+    void delete(OrderItem orderItem);
 }

@@ -34,4 +34,8 @@ public class OrderServiceImpl implements OrderService {
     public void update(OrderModel orderModel) {
         dao.update(orderModel);
     }
+
+    public void delete(OrderModel orderModel) {
+        dao.delete(orderModel);
+    }
 }

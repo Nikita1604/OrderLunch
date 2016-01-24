@@ -17,7 +17,7 @@ public class ScheduledTask {
     @Autowired
     private UserService userService;
 
-    @Scheduled(cron = "0 0 11-11 * * MON-SUT")
+    @Scheduled(cron = "0 0 11-11 * * MON-SAT")
     public void needOrderNotification() {
         SimpleNotificationManager simpleNotificationManager = new SimpleNotificationManager();
         List<User> users = userService.findAllUsers();
