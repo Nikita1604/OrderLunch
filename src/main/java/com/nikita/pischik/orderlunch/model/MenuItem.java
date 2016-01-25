@@ -10,13 +10,13 @@ public class MenuItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "category")
+    @Column(name = "category", columnDefinition = "nvarchar(255)")
     private String category;
 
     @Column(name = "category_id")
     private String category_id;
 
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "nvarchar(255)")
     private String title;
 
     @Column(name = "weight")
@@ -25,7 +25,7 @@ public class MenuItem {
     @Column(name = "cost")
     private String cost;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "nvarchar(255)")
     private String description;
 
     @Column(name = "image")

@@ -8,7 +8,7 @@ import java.sql.Types;
 public class MySQLServerDialect extends SQLServerDialect{
 
     public MySQLServerDialect() {
-        super();
+        //registerHibernateType(Types.NVARCHAR, 4000, "string");
         registerColumnType(Types.VARCHAR, "nvarchar($l)");
     }
 }
