@@ -70,9 +70,8 @@ public class MainController {
         if (getPrincipal().equals("anonymousUser")) {
             return "redirect:/login";
         }
-        MenuDownloader menuDownloader = new MenuDownloader();
         MenuDownloader.MenuObject menu =
-                menuDownloader.fromJSONParser("http://www.cafebaluk.by/Orders/GetTodayDishes?day=1");
+                MenuDownloader.fromJSONParser("http://www.cafebaluk.by/Orders/GetTodayDishes?day=1");
         List<MenuDownloader.ItemMenu> menuList = menu.getDishes();
         List<Integer> dishesInCategory = new ArrayList<Integer>();
         for (int i=0; i<20; i++) {

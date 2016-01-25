@@ -3,7 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Deposits list</title>
     <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"/>
     <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"/>
@@ -52,8 +52,8 @@
                             <td>${depos.deposit.tomorrow_cost}</td>
                             <td>${depos.deposit.residue}</td>
                             <td style="width: 40px">
-                                <div id="plus-button-container" onclick="onPlusClick(${depos.deposit.id})" style="width: 25px">
-                                    <img id="plus-button-img" src="/static/image/plus.png" style="width: 25px; height: 25px"/>
+                                <div id="plus-button-container-${depos.deposit.id}" onclick="onPlusClick(${depos.deposit.id})" style="width: 25px">
+                                    <img id="plus-button-img-${depos.deposit.id}" src="/static/image/plus.png" style="width: 25px; height: 25px"/>
                                 </div>
 
                             </td>
@@ -73,9 +73,9 @@
             tdInput.setAttribute("id", "input-td");
             tdButton.setAttribute("id", "button-td");
             var input = document.createElement("input");
-            var plusButton = document.getElementById("plus-button-img");
+            var plusButton = document.getElementById("plus-button-img-"+id);
             plusButton.setAttribute("src", "/static/image/delete.png");
-            var plusButtonContainer = document.getElementById("plus-button-container");
+            var plusButtonContainer = document.getElementById("plus-button-container-"+id);
             plusButtonContainer.setAttribute("onClick", "discardChanges("+id+")");
             input.setAttribute("id", "value-input");
             var button = document.createElement("button");
@@ -90,8 +90,8 @@
             var element = document.getElementById("deposit-"+id);
             element.removeChild(document.getElementById("input-td"));
             element.removeChild(document.getElementById("button-td"));
-            var plusButton = document.getElementById("plus-button-img");
-            var plusButtonContainer = document.getElementById("plus-button-container");
+            var plusButton = document.getElementById("plus-button-img-"+id);
+            var plusButtonContainer = document.getElementById("plus-button-container-"+id);
             plusButton.setAttribute("src", "/static/image/plus.png");
             plusButtonContainer.setAttribute("onClick", "onPlusClick("+id+")");
         }
