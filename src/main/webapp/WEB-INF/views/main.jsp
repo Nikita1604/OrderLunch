@@ -3,7 +3,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Menu</title>
     <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"/>
     <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"/>
@@ -68,12 +68,12 @@
                     <tr>
                         <td valign="top">
                         <div align="top" style="float: left">
-                            <div  onclick="onMenuItemClick('${menuItem.category}', ${menuItem.dish_id}, ${menuItem.in_category_id}, ${menuItem.cost})"
+                            <div  onclick='onMenuItemClick(${menuItem.dish_id}, ${menuItem.in_category_id}, ${menuItem.cost})'
                                   style="float: left; display: inline-block">
                                 <img src="${menuItem.image}" style="width:130px; height:130px;"/>
                             </div>
                             <div style="float: left; margin-left: 20px; width: 500px">
-                                <div><h><p style="font-weight: bold">${menuItem.title}</p></h></div>
+                                <div><h><p style="font-weight: bold" id="dish-title-${menuItem.dish_id}">${menuItem.title}</p></h></div>
                                 <div><span>${menuItem.description}</span></div>
                                 <div><span>Вес: ${menuItem.weight}</span></div>
                                 <div><span>Стоимость: ${menuItem.cost}</span></div>
@@ -88,8 +88,8 @@
         </table>
     </div>
 </div>
-<div class="busket-container" style="position: fixed; right:0px; margin-top: 120px">
-    <div class="panel panel-default" >
+<div class="busket-container" style="">
+    <div class="panel panel-default">
         <div class="panel-heading">
             <span class="lead">Заказ</span>
         </div>
@@ -109,9 +109,11 @@
 </div>
 
 <script>
-    function onMenuItemClick(category, dish_id, in_category_id, cost) {
+    function onMenuItemClick(dish_id, in_category_id, cost) {
         var checkElem = document.getElementById(dish_id);
         if (!checkElem) {
+            var titleElement = document.getElementById("dish-title-"+dish_id);
+            var title = titleElement.innerText;
             var element = document.getElementById("busket-table-body");
             var trElement = document.createElement("tr");
             var tdBreak = document.createElement("td");
@@ -136,9 +138,9 @@
             imageContainer.appendChild(imageDel);
             tdBreak.appendChild(imageContainer);
             console.log(tdBreak);
-            console.log(category);
+            console.log(title);
             console.log(in_category_id);
-            spanName.innerText = category + ": номер " + in_category_id;
+            spanName.innerText = title;
             spanCountContainer.innerText = "Количество: ";
             spanCount.innerText = "1";
             spanCount.setAttribute("id", "span-count-"+dish_id);

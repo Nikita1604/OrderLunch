@@ -131,9 +131,9 @@ public class MainController {
         if (getPrincipal().equals("anonymousUser")) {
             return "redirect:/login";
         }
-        if (!isUserAdmin()) {
+        /*if (!isUserAdmin()) {
             return "redirect:/Access_Denied";
-        }
+        }*/
         Gson gson = new Gson();
         Utils.orderFromBasket dishes = gson.fromJson(data, Utils.orderFromBasket.class);
         String login = getPrincipal();
@@ -196,12 +196,12 @@ public class MainController {
         return "userorderlist";
     }
 
-    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/admin", method = RequestMethod.GET)
     public String adminPage(ModelMap model) {
 
         model.addAttribute("user", getPrincipal());
         return "admin";
-    }
+    }*/
 
     @RequestMapping(value = "/orders", method = RequestMethod.GET)
     public String orders(ModelMap model) {
